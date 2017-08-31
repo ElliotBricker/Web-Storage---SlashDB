@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<div id="result"></div>
+
+<script>
+
+     var SlashDBrequest = new XMLHttpRequest();
+         // note that the "async" boolean parameter of the open method is false in order to
+         // NOT perform the operation asynchrononously
+     SlashDBrequest.open("GET", "http://demo.slashdb.com/db/Chinook/Customer/Email.json",false);
+     SlashDBrequest.setRequestHeader("Content-Type", "text/xml");
+     SlashDBrequest.addEventListener("load", function() {
+       console.log( SlashDBrequest.response);
+              }, false);
+
+              try {                 // when 'offline' don't run the send method
+                 SlashDBrequest.send();
+              } catch (error) {
+                          // do nothing
+              }
+
+
+if (SlashDBrequest.response !== "") {
+  var obj = JSON.parse(SlashDBrequest.response);
+  // obj is an array of email addresses parsed from the JSON response
+  console.log( obj);
+  console.log( obj.length);
+
+  var numberOfEmails = obj.length;
+  for (var i = 0; i < numberOfEmails; i++) {
+
+    var EmailAddress = obj[i];
+    console.log(EmailAddress);
+
+
+
+
+    if (typeof(Storage) !== "undefined") {
+       // Store each of the Email addressed into a key/value pair in the local storage
+
+         localStorage.setItem("Email"+i, EmailAddress);
+
+       } else {
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support Local Storage...";
+     }
+   }  // for loop
+
+     localStorage.setItem("savedNumberOfEmails", numberOfEmails );
+     //  use the array length saved in the local Storage
+  }  // response is available above
+     console.log("Getting all Email items from the local storage for display in DIVs")
+     localSavedNumberOfEmails = localStorage.getItem("savedNumberOfEmails");
+     var html='';
+     for (var i=0; i<=localSavedNumberOfEmails-1; i++) {
+          html+='<div>'+localStorage.getItem("Email"+i);+'</div>';
+     }
+     document.getElementById('result').innerHTML+= html;
+
+</script>
+
+</body>
+</html>
